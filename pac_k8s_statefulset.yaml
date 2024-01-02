@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: molecule
+  labels:
+    app: molecule
+spec:
+  selector:
+    matchLabels:
+      app: molecule
+  serviceName: "molecule-service"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: molecule
+    spec:
+      terminationGracePeriodSeconds: 900
+      volumes:
+        - name: molecule-storage
+          persistentVolumeClaim:
+            claimName: molecule-storage
+      nodeSelector:
+        agentpool: userpool
+      securityContext:
+        fsGroup: 1000 
+      containers:
+      - image: boomi/molecule:4.2.0
+        imagePullPolicy: Always
+        name: atom-node
+        ports:
+        - containerPort: 9090
+          protocol: TCP
+        - containerPort: 9093
+          protocol: TCP
+        lifecycle:
+          preStop:
+            exec:
+              command:
+                - sh
+                - /home/boomi/scaledown.sh
+        resources:
+          limits:
+            cpu: $pod_cpu
+            memory: $pod_memory
+          requests:
+            cpu: "500m"
+            memory: "768Mi"
+        volumeMounts:
+          - name: molecule-storage
+            mountPath: "/mnt/boomi"
+        readinessProbe:
+          periodSeconds: 10
+          initialDelaySeconds: 10
+          httpGet:
+            path: /_admin/readiness
+            port: 9090
+        livenessProbe:
+          periodSeconds: 60
+          httpGet:
+            path: /_admin/liveness
+            port: 9090
+        env:
+        - name: BOOMI_ATOMNAME
+          value: "$boomi_molecule_name"
+        - name: ATOM_LOCALHOSTID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: BOOMI_ACCOUNTID
+          valueFrom:
+            secretKeyRef:
+              name: boomi-secret
+              key: account
+        - name: BOOMI_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: boomi-secret
+              key: username
+        - name: BOOMI_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: boomi-secret
+              key: password
+        - name: CONTAINER_PROPERTIES_OVERRIDES
+          value: "com.boomi.container.debug=false|com.boomi.deployment.quickstart=true"
