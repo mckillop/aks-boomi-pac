@@ -9,8 +9,8 @@ spec:
   accessModes:
     - ReadWriteMany
   mountOptions:
-    - vers=3
+    - vers=4
   persistentVolumeReclaimPolicy: Retain
   nfs:
-    server: premstormck.file.core.windows.net
-    path: /premstormck/boomishare01
+    server: aksstorage1.file.core.windows.net
+    path: /aksstorage1/boominfs01
