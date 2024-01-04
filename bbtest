@@ -14,4 +14,4 @@ spec:
   - name: nfs
     nfs:
       server: boomipacnfs01.file.core.windows.net
-      path: "/boomipacnfs01/akstest"
+      path: /boomipacnfs01/akstest
