@@ -13,5 +13,5 @@ spec:
   volumes:
   - name: nfs
     nfs:
-      server: boomipacnfs01.file.core.windows.net
-      path: /boomipacnfs01/akstest
+      server: aksstorage1.file.core.windows.net
+      path: /aksstorage1/aksnfs
