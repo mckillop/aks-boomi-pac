@@ -12,5 +12,5 @@ spec:
     - vers=4
   persistentVolumeReclaimPolicy: Retain
   nfs:
-    server: aksstorage1.file.core.windows.net
-    path: /aksstorage1/aksnfs
+    server: mystoac1.file.core.windows.net
+    path: /mystoac1/boominfs01
