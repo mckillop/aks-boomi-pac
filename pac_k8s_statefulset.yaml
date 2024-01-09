@@ -19,15 +19,25 @@ spec:
         - name: boomi-storage
           persistentVolumeClaim:
             claimName: pv-volume
+      nodeSelector:
+        agentpool: userpool            
       securityContext:
         fsGroup: 1000
       containers:
-      - image: boomi/cloud:release
+      - image: boomi/cloud:4.2.0
         imagePullPolicy: Always
         name: atom-node
         ports:
         - containerPort: 9090
           protocol: TCP
+        - containerPort: 9093
+          protocol: TCP
+        lifecycle:
+          preStop:
+            exec:
+              command:
+                - sh
+                - /home/boomi/scaledown.sh
         resources:
           limits:
             cpu: 1000m
@@ -60,3 +70,5 @@ spec:
           value: "cloud-cec24751-eae7-4777-a541-4f8da6249022"
         - name : BOOMI_ENVIRONMENTID
           value: "40590140-dc5b-4c49-89f9-47f99641a0d4"
+        - name: CONTAINER_PROPERTIES_OVERRIDES
+          value: "com.boomi.container.debug=false|com.boomi.deployment.quickstart=true"
